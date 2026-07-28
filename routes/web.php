@@ -15,18 +15,14 @@ Route::get('/', function () {
 
 // Admin ONLY route
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Route::get('/dashboard', function () {
-    //     return view('admin.dashboard');
-    // })->name('dashboard');
 
     Route::get('/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('dashboard');
+    Route::get('/employees', [Admin\EmployeeController::class, 'showEmployee'])->name('employees');
+    Route::get('/employees/create', [Admin\EmployeeController::class, 'showCreateEmployee'])->name('create.employee');
 });
 
 // Employee ONLY route
 Route::middleware(['auth', 'verified', 'role:employee'])->prefix('employee')->name('employee.')->group(function () {
-    // Route::get('/dashboard', function () {
-    //     return view('employee.dashboard');
-    // })->name('dashboard');
 
     Route::get('/dashboard', [Employee\DashboardController::class, 'showDashboard'])->name('dashboard');
 });
