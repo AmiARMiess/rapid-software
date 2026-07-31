@@ -19,8 +19,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('dashboard');
     Route::get('/employees', [Admin\EmployeeController::class, 'showEmployee'])->name('employees');
     Route::get('/employees/create', [Admin\EmployeeController::class, 'showCreateEmployee'])->name('create.employee');
-    Route::post('/employees/calculate-socso', [Admin\EmployeeController::class, 'calculationSocso'])->name('calculate.socso');
-    Route::post('/employees/payslip', [Admin\EmployeeController::class, 'showPayslip'])->name('payslip.employee');
+    Route::get('/employees/calculate-socso', [Admin\EmployeeController::class, 'calculationSocso'])->name('calculate.socso');
+    Route::get('/employees/payslip', [Admin\EmployeeController::class, 'showPayslip'])->name('payslip.employee');
 });
 
 // Employee ONLY route

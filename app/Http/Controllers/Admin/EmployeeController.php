@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class EmployeeController extends Controller
 {
@@ -18,24 +19,27 @@ class EmployeeController extends Controller
         return view('admin.employee_create');
     }
 
-    public function calculationSocso(Request $request): View
+    public function calculationSocso(Request $request)
     {
-        $validated = $request->validate([
-            'monthly_salary' => ['required', 'numeric', 'min:0'],
-        ]);
+        // $validated = $request->validate([
+        //     'monthly_salary' => ['required', 'numeric', 'min:0'],
+        // ]);
 
-        $monthlySalary = (float) $validated['monthly_salary'];
+        // $monthlySalary = (float) $validated['monthly_salary'];
+        $monthlySalary = (float) 1800;
         $employeeContribution = $this->calculateSocsoEmployeeContribution($monthlySalary);
         $employerContribution = $this->calculateSocsoEmployerContribution($monthlySalary);
 
-        return view('admin.employee_create', [
-            'socso' => [
-                'monthly_salary' => $monthlySalary,
-                'employee_contribution' => $employeeContribution,
-                'employer_contribution' => $employerContribution,
-                'total_contribution' => round($employeeContribution + $employerContribution, 2),
-            ],
-        ]);
+        dump($employeeContribution);
+
+        // return view('admin.employee_create', [
+        //     'socso' => [
+        //         'monthly_salary' => $monthlySalary,
+        //         'employee_contribution' => $employeeContribution,
+        //         'employer_contribution' => $employerContribution,
+        //         'total_contribution' => round($employeeContribution + $employerContribution, 2),
+        //     ],
+        // ]);
     }
 
     protected function calculateSocsoEmployeeContribution(float $monthlySalary): float
@@ -64,6 +68,9 @@ class EmployeeController extends Controller
     }
 
     public function showPayslip() {
-        
+
+        Pdf::view('admin.pdf.payslip')
+            ->format('a4')
+            ->save('invoice.pdf');
     }
 }
