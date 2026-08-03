@@ -17,10 +17,32 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('dashboard');
+
     Route::get('/employees', [Admin\EmployeeController::class, 'showEmployee'])->name('employees');
     Route::get('/employees/create', [Admin\EmployeeController::class, 'showCreateEmployee'])->name('create.employee');
-    Route::get('/employees/calculate-socso', [Admin\EmployeeController::class, 'calculationSocso'])->name('calculate.socso');
+    Route::get('/employees/datatable', [Admin\EmployeeController::class, 'employeeDatatable'])->name('datatable.employee');
+
+    // Route::get('/employees/calculate-socso', [Admin\EmployeeController::class, 'calculationSocso'])->name('calculate.socso');
     Route::get('/employees/payslip', [Admin\EmployeeController::class, 'showPayslip'])->name('payslip.employee');
+
+    Route::get('/departments', [Admin\DepartmentController::class, 'showDepartment'])->name('departments');
+    Route::get('/departments/create', [Admin\DepartmentController::class, 'showCreateDepartment'])->name('create.department');
+    Route::get('/departments/datatable', [Admin\DepartmentController::class, 'departmentDatatable'])->name('datatable.department');
+
+    Route::get('/positions', [Admin\PositionController::class, 'showPosition'])->name('positions');
+    Route::get('/positions/create', [Admin\PositionController::class, 'showCreatePosition'])->name('create.position');
+    Route::get('/positions/view/{position_id}', [Admin\PositionController::class, 'showViewPosition'])->name('view.position');
+    Route::get('/positions/edit/{position_id}', [Admin\PositionController::class, 'showEditPosition'])->name('edit.position');
+    Route::get('/positions/datatable', [Admin\PositionController::class, 'positionDatatable'])->name('datatable.position');
+
+    Route::get('/leave', [Admin\LeaveController::class, 'showLeave'])->name('leave');
+    Route::get('/leave/create', [Admin\LeaveController::class, 'showCreateLeave'])->name('create.leave');
+
+    Route::get('/claims', [Admin\ClaimController::class, 'showClaim'])->name('claims');
+    Route::get('/claims/create', [Admin\ClaimController::class, 'showCreateClaim'])->name('create.claim');
+
+    Route::get('/attendance', [Admin\AttendanceController::class, 'showAttendance'])->name('attendance');
+    Route::get('/attendance/create', [Admin\AttendanceController::class, 'showCreateAttendance'])->name('create.attendance');
 });
 
 // Employee ONLY route

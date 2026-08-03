@@ -8,20 +8,19 @@
 @section('content')
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Employees</h1>
+        <h1 class="h3 mb-0 text-gray-800">Departments</h1>
 
-        <a href="{{ route('admin.create.employee') }}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">
-            <i class="fa-solid fa-plus"></i> Add Employee</a>
+        <a href="{{ route('admin.create.department') }}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fa-solid fa-plus"></i> Add Department</a>
     </div>
 
-    <div id="employees-datatable">
+    <div id="department-datatable">
         <template>
             <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items="serverItems"
                 :items-length="totalItems" :loading="loading" @update:options="loadItems"></v-data-table-server>
         </template>
     </div>
 @endsection
-
 
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.39/vue.global.prod.min.js"></script>
@@ -40,12 +39,7 @@
                 const itemsPerPage = ref(8)
                 const headers = ref([{
                         title: 'Name',
-                        key: 'full_name',
-                    },
-                    {
-                        title: 'Gender',
-                        key: 'employee_number',
-                        sortable: false,
+                        key: 'name',
                     },
                     {
                         title: 'Actions',
@@ -74,7 +68,8 @@
                         sortBy: JSON.stringify(sortBy ?? []),
                     })
 
-                    const response = await fetch(`{{ route('admin.datatable.employee') }}?${params.toString()}`)
+                    const response = await fetch(
+                        `{{ route('admin.datatable.department') }}?${params.toString()}`)
                     const data = await response.json()
 
                     serverItems.value = data.items
@@ -113,18 +108,15 @@
                     :headers="headers"
                     :items="serverItems"
                     :items-length="totalItems"
-                    loading-text="Loading employees... Please wait"
+                    loading-text="Loading departments... Please wait"
                     :loading="loading"
                     :search="search"
                     class="table-striped"
                     item-value="name"
                     @update:options="loadItems"
                 >
-                <template v-slot:header.full_name>
+                <template v-slot:header.name>
                     <div class="font-weight-bold">Name</div>
-                </template>
-                <template v-slot:header.employee_number>
-                    <div class="font-weight-bold">Employee Number</div>
                 </template>
                 <template v-slot:header.actions>
                     <div class="font-weight-bold">Actions</div>
@@ -162,6 +154,6 @@
         })
 
         app.use(Vuetify.createVuetify())
-        app.mount('#employees-datatable')
+        app.mount('#department-datatable')
     </script>
 @endpush

@@ -26,6 +26,41 @@
                     <span>Employees</span></a>
             </li>
 
+            <!-- Nav Item - Charts -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.leave') }}">
+                    <i class="fa-solid fa-person-running"></i>
+                    <span>Leave</span></a>
+            </li>
+
+            <!-- Nav Item - Charts -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.claims') }}">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>Claims</span></a>
+            </li>
+            
+            <!-- Nav Item - Charts -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.attendance') }}">
+                    <i class="fa-solid fa-user-clock"></i>
+                    <span>Attendance</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    <i class="fa-regular fa-building"></i>
+                    <span>Company</span>
+                </a>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="buttons.html">Company Details</a>
+                        <a class="collapse-item" href="{{ route('admin.departments') }}">Departments</a>
+                        <a class="collapse-item" href="{{ route('admin.positions') }}">Positions</a>
+                    </div>
+                </div>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 

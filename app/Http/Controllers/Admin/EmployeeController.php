@@ -6,17 +6,37 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Spatie\LaravelPdf\Facades\Pdf;
+use App\Models\OptionGender;
+use App\Models\OptionBankName;
+use App\Models\OptionReligion;
+use App\Models\OptionMaritalStatus;
+use App\Models\OptionEmploymentType;
+use App\Models\Employee;
 
 class EmployeeController extends Controller
 {
     public function showEmployee(): View
     {
-        return view('admin.employee');
+        $employees = Employee::get();
+
+        return view('admin.employee', compact('employees'));
     }
 
     public function showCreateEmployee(): View
     {
-        return view('admin.employee_create');
+        $optionGenders = OptionGender::all();
+        $optionBankNames = OptionBankName::all();
+        $optionReligions = OptionReligion::all();
+        $optionMaritalStatuses = OptionMaritalStatus::all();
+        $optionEmploymentTypes = OptionEmploymentType::all();
+
+        return view('admin.employee_create', compact(
+            'optionGenders',
+            'optionBankNames',
+            'optionReligions',
+            'optionMaritalStatuses',
+            'optionEmploymentTypes'
+        ));
     }
 
     public function calculationSocso(Request $request)
@@ -67,7 +87,61 @@ class EmployeeController extends Controller
         return round($value / $increment) * $increment;
     }
 
-    public function showPayslip() {
+    public function employeeDatatable(Request $request)
+    {
+        $query = Employee::query()->where('user_id', auth()->user()->id);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                ->orWhere('employee_number', 'like', "%{$search}%")
+                ->orWhere('passport_number', 'like', "%{$search}%")
+                ->orWhere('ic_number', 'like', "%{$search}%");
+                    // ->orWhereHas('optionGender', function ($optionGenderQuery) use ($search) {
+                    //     $optionGenderQuery->where('gender', 'like', "%{$search}%");
+                    // });
+            });
+        }
+
+        $sortBy = json_decode($request->get('sortBy', '[]'), true);
+
+        if (is_array($sortBy) && ! empty($sortBy)) {
+            $sort = $sortBy[0];
+
+            if (isset($sort['key']) && isset($sort['order'])) {
+                $query->orderBy($sort['key'], $sort['order'] === 'desc' ? 'desc' : 'asc');
+            }
+        }
+
+        $page = (int) $request->get('page', 1);
+        $itemsPerPage = (int) $request->get('itemsPerPage', 5);
+
+        $total = $query->count();
+
+        $items = $query
+            // ->with('optionGender:id,gender')
+            ->skip(($page - 1) * $itemsPerPage)
+            ->take($itemsPerPage)
+            ->get()
+            // ->map(function (Employee $employee) {
+            //     return [
+            //         ...$employee->toArray(),
+            //         'gender' => $employee->optionGender?->gender ?? $employee->gender,
+            //         'gender_id' => (int) $employee->gender,
+            //     ];
+            // })
+            ->values();
+
+        return response()->json([
+            'items' => $items,
+            'total' => $total,
+        ]);
+    }
+
+    public function showPayslip()
+    {
 
         Pdf::view('admin.pdf.payslip')
             ->format('a4')
