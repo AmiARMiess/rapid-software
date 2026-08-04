@@ -30,9 +30,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/departments/datatable', [Admin\DepartmentController::class, 'departmentDatatable'])->name('datatable.department');
 
     Route::get('/positions', [Admin\PositionController::class, 'showPosition'])->name('positions');
-    Route::get('/positions/create', [Admin\PositionController::class, 'showCreatePosition'])->name('create.position');
+    Route::get('/positions/create', [Admin\PositionController::class, 'showCreatePosition'])->name('show_create.position');
+    Route::post('/positions/create-position', [Admin\PositionController::class, 'createPosition'])->name('create.position');
     Route::get('/positions/view/{position_id}', [Admin\PositionController::class, 'showViewPosition'])->name('view.position');
     Route::get('/positions/edit/{position_id}', [Admin\PositionController::class, 'showEditPosition'])->name('edit.position');
+    Route::post('/positions/edit/{position_id}', [Admin\PositionController::class, 'updatePosition'])->name('update.position');
+    Route::delete('/positions/delete/{position_id}', [Admin\PositionController::class, 'deletePosition'])->name('delete.position');
     Route::get('/positions/datatable', [Admin\PositionController::class, 'positionDatatable'])->name('datatable.position');
 
     Route::get('/leave', [Admin\LeaveController::class, 'showLeave'])->name('leave');
@@ -57,4 +60,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

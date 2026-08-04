@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreatePositionRequest;
 use App\Models\Department;
 use App\Models\Employee;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
-use App\Models\Position;
-use App\Models\OptionStatus;
 use App\Models\OptionLevel;
+use App\Models\OptionStatus;
+use App\Models\Position;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
+use App\Http\Requests\UpdatePositionRequest;
 
 class PositionController extends Controller
 {
@@ -28,15 +32,72 @@ class PositionController extends Controller
         return view('admin.position_create', compact('departments', 'positions', 'optionStatuses', 'optionLevels'));
     }
 
+    public function createPosition(CreatePositionRequest $request)
+    {
+        $data = $request->validated();
+        $data['user_id'] = auth()->id();
+
+        $position = Position::create($data);
+
+        $responsibilities = collect($request->input('responsibilities', []))
+            ->filter(fn ($responsibility) => filled($responsibility))
+            ->map(fn ($responsibility) => ['name' => trim($responsibility)])
+            ->all();
+
+        if (! empty($responsibilities)) {
+            $position->positionResponsibles()->createMany($responsibilities);
+        }
+
+        return redirect()->route('admin.edit.position', ['position_id' => $position->id])
+            ->with('success', 'Position created successfully.');
+    }
+
     public function showEditPosition(Request $request): View
     {
-        $departments = Department::where('user_id', auth()->user()->id)->get();
-        $position = Position::where('id', $request->position_id)->where('user_id', auth()->user()->id)->firstOrFail();
-        $positions = Position::where('user_id', auth()->user()->id)->get();
+        $departments = Department::where('user_id', auth()->user()->id)
+            ->get();
+
+        $position = Position::where('id', $request->position_id)
+            ->where('user_id', auth()->user()->id)
+            ->with('positionResponsibles')
+            ->firstOrFail();
+
+        $positions = Position::where('user_id', auth()->user()->id)
+            ->get();
+
+        $countTotalPosition = Employee::where('user_id', auth()->user()->id)
+            ->where('position', $request->position_id)
+            ->count();
+
         $optionStatuses = OptionStatus::all();
         $optionLevels = OptionLevel::all();
 
-        return view('admin.position_edit', compact('departments', 'position', 'positions', 'optionStatuses', 'optionLevels'));
+        return view('admin.position_edit', compact('departments', 'position', 'positions', 'optionStatuses', 'optionLevels', 'countTotalPosition'));
+    }
+
+    public function updatePosition(UpdatePositionRequest $request): RedirectResponse
+    {
+        $position = Position::where('id', (int) $request->position_id)
+            ->where('user_id', auth()->user()->id)
+            ->firstOrFail();
+
+        $validated = $request->validated();
+
+        $position->update($validated);
+
+        $position->positionResponsibles()->delete();
+
+        $responsibilities = collect($request->input('responsibilities', []))
+            ->filter(fn($responsibility) => filled($responsibility))
+            ->map(fn($responsibility) => ['name' => trim($responsibility)])
+            ->all();
+
+        if (! empty($responsibilities)) {
+            $position->positionResponsibles()->createMany($responsibilities);
+        }
+
+        return redirect()->route('admin.edit.position', ['position_id' => $position->id])
+            ->with('success', 'Position updated successfully.');
     }
 
     public function positionDatatable(Request $request)
@@ -83,8 +144,20 @@ class PositionController extends Controller
 
     public function showViewPosition(Request $request): View
     {
-        $countTotalPosition = Employee::where('position', $request->position_id)->where('user_id', auth()->user()->id)->count();
+        $position = Position::where('user_id', auth()->user()->id)->where('id', (int) $request->position_id)->firstOrFail();
+        $countTotalPosition = Employee::where('position', (int) $request->position_id)->where('user_id', auth()->user()->id)->count();
 
-        return view('admin.position_view', compact('countTotalPosition'));
+        return view('admin.position_view', compact('position' ,'countTotalPosition'));
+    }
+
+    public function deletePosition(Request $request): JsonResponse
+    {
+        $position = Position::where('id', (int) $request->position_id)
+            ->where('user_id', auth()->user()->id)
+            ->firstOrFail();
+
+        $position->delete();
+
+        return response()->json(['success' => true]);
     }
 }

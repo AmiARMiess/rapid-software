@@ -8,12 +8,12 @@
         </div>
 
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.positions') }}" class="btn btn-light btn-sm shadow-sm">
+            <a href="{{ route('admin.positions') }}" class="btn btn-light btn-sm shadow-sm mr-2">
                 <i class="fa-solid fa-arrow-left"></i> Back
             </a>
-            <button class="btn btn-primary btn-sm shadow-sm" type="button">
+            <a class="btn btn-primary btn-sm shadow-sm" href="{{ route('admin.edit.position', request('position_id')) }}" type="button">
                 <i class="fa-regular fa-pen-to-square"></i> Edit Position
-            </button>
+            </a>
         </div>
     </div>
 
@@ -23,9 +23,8 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Current Position</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Senior Developer</div>
-                            <div class="mt-2 small text-gray-600">Technical lead for platform improvement and product delivery.</div>
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Position</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $position->name }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fa-solid fa-briefcase fa-2x text-primary"></i>
@@ -57,7 +56,8 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Status</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Active</div>
+                            {{-- <div class="h5 mb-0 font-weight-bold text-gray-800">{{ optional($position->optionStatus)->name ?? 'Inactive' }}</div> --}}
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $position->optionStatus?->name }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fa-solid fa-circle-check fa-2x text-info"></i>
@@ -73,7 +73,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Level</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">L3</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $position->optionLevel?->name }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fa-solid fa-ranking-star fa-2x text-warning"></i>
@@ -89,30 +89,25 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Position Details</h6>
-                    <span class="badge badge-success">Approved</span>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-6 mb-3">
-                            <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Position Name</label>
-                            <div class="form-control-plaintext h6 text-gray-900">Senior Developer</div>
-                        </div>
-                        <div class="col-sm-6 mb-3">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Department</label>
-                            <div class="form-control-plaintext h6 text-gray-900">Engineering</div>
+                            <div class="form-control-plaintext h6 text-gray-900">{{ $position->positionDepartment?->name }}</div>
                         </div>
                         <div class="col-sm-6 mb-3">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Reporting To</label>
-                            <div class="form-control-plaintext h6 text-gray-900">Technology Manager</div>
+                            <div class="form-control-plaintext h6 text-gray-900">{{ $position->reportingTo?->name }}</div>
                         </div>
                         <div class="col-sm-6 mb-3">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Created On</label>
-                            <div class="form-control-plaintext h6 text-gray-900">2026-08-03</div>
+                            <div class="form-control-plaintext h6 text-gray-900">{{ $position->created_at->format('d M Y') }}</div>
                         </div>
                         <div class="col-sm-12">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Description</label>
                             <div class="form-control-plaintext text-gray-800">
-                                Leads software delivery, coordinates technical planning, and ensures best practices are followed across the engineering team.
+                                {{ $position->description }}
                             </div>
                         </div>
                     </div>
@@ -127,10 +122,9 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Guide technical roadmap and sprint execution</li>
-                        <li class="list-group-item">Review architecture decisions and code quality</li>
-                        <li class="list-group-item">Coach junior engineers and support onboarding</li>
-                        <li class="list-group-item">Ensure delivery timelines and standards are met</li>
+                        @foreach ($position->positionResponsibles as $positionResponsibility)
+                            <li class="list-group-item">{{ $positionResponsibility->name }}</li>
+                        @endforeach
                     </ul>
                 </div>
             </div>

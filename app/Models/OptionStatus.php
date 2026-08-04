@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OptionStatus extends Model
 {
-    //
+    protected $fillable = [
+        'name',
+    ];
 }
