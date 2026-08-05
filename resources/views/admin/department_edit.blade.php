@@ -115,10 +115,11 @@
                                 <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Department
                                     Responsibilities</label>
                                 <div id="responsibility-list" class="d-flex flex-column gap-2 mb-3">
-                                    @forelse (collect(old('responsibilities', []))->filter(fn($responsibility) => filled($responsibility)) as $responsibility)
+                                    @forelse ($department->departmentResponsibles as $responsible)
                                         <div class="input-group responsibility-item pb-2">
                                             <input type="text" class="form-control" name="responsibilities[]"
-                                                value="{{ $responsibility }}" placeholder="Add a department responsibility">
+                                                value="{{ old('responsibilities.' . $loop->index, $responsible->name) }}"
+                                                placeholder="Add a department responsibility">
                                             <button type="button" class="btn btn-outline-danger remove-responsibility"
                                                 title="Remove">
                                                 <i class="fa-solid fa-xmark"></i>
