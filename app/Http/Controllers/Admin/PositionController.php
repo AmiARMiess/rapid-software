@@ -22,6 +22,48 @@ class PositionController extends Controller
         return view('admin.position');
     }
 
+    public function positionDatatable(Request $request)
+    {
+        $query = Position::query()->where('user_id', auth()->user()->id);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+                // ->orWhereHas('optionGender', function ($optionGenderQuery) use ($search) {
+                //     $optionGenderQuery->where('gender', 'like', "%{$search}%");
+                // });
+            });
+        }
+
+        $sortBy = json_decode($request->get('sortBy', '[]'), true);
+
+        if (is_array($sortBy) && ! empty($sortBy)) {
+            $sort = $sortBy[0];
+
+            if (isset($sort['key']) && isset($sort['order'])) {
+                $query->orderBy($sort['key'], $sort['order'] === 'desc' ? 'desc' : 'asc');
+            }
+        }
+
+        $page = (int) $request->get('page', 1);
+        $itemsPerPage = (int) $request->get('itemsPerPage', 5);
+
+        $total = $query->count();
+
+        $items = $query
+            ->skip(($page - 1) * $itemsPerPage)
+            ->take($itemsPerPage)
+            ->get()
+            ->values();
+
+        return response()->json([
+            'items' => $items,
+            'total' => $total,
+        ]);
+    }
+    
     public function showCreatePosition(): View
     {
         $departments = Department::where('user_id', auth()->user()->id)->get();
@@ -76,9 +118,7 @@ class PositionController extends Controller
     }
 
     public function updatePosition(UpdatePositionRequest $request): RedirectResponse
-    {
-        // dd($request);
-        
+    {        
         $position = Position::where('id', (int) $request->position_id)
             ->where('user_id', auth()->user()->id)
             ->firstOrFail();
@@ -100,48 +140,6 @@ class PositionController extends Controller
 
         return redirect()->route('admin.edit.position', ['position_id' => $position->id])
             ->with('success', 'Position updated successfully.');
-    }
-
-    public function positionDatatable(Request $request)
-    {
-        $query = Position::query()->where('user_id', auth()->user()->id);
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-                // ->orWhereHas('optionGender', function ($optionGenderQuery) use ($search) {
-                //     $optionGenderQuery->where('gender', 'like', "%{$search}%");
-                // });
-            });
-        }
-
-        $sortBy = json_decode($request->get('sortBy', '[]'), true);
-
-        if (is_array($sortBy) && ! empty($sortBy)) {
-            $sort = $sortBy[0];
-
-            if (isset($sort['key']) && isset($sort['order'])) {
-                $query->orderBy($sort['key'], $sort['order'] === 'desc' ? 'desc' : 'asc');
-            }
-        }
-
-        $page = (int) $request->get('page', 1);
-        $itemsPerPage = (int) $request->get('itemsPerPage', 5);
-
-        $total = $query->count();
-
-        $items = $query
-            ->skip(($page - 1) * $itemsPerPage)
-            ->take($itemsPerPage)
-            ->get()
-            ->values();
-
-        return response()->json([
-            'items' => $items,
-            'total' => $total,
-        ]);
     }
 
     public function showViewPosition(Request $request): View

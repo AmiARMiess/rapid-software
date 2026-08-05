@@ -27,6 +27,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
     Route::get('/departments', [Admin\DepartmentController::class, 'showDepartment'])->name('departments');
     Route::get('/departments/create', [Admin\DepartmentController::class, 'showCreateDepartment'])->name('create.department');
+
+    Route::post('/departments/create-department', [Admin\DepartmentController::class, 'createDepartment'])->name('create.department');
+    Route::get('/departments/view/{department_id}', [Admin\DepartmentController::class, 'showViewDepartment'])->name('view.department');
+    Route::get('/departments/edit/{department_id}', [Admin\DepartmentController::class, 'showEditDepartment'])->name('edit.department');
+    Route::post('/departments/edit/{department_id}', [Admin\DepartmentController::class, 'updateDepartment'])->name('update.department');
+    Route::delete('/departments/delete/{department_id}', [Admin\DepartmentController::class, 'deleteDepartment'])->name('delete.position');
+
     Route::get('/departments/datatable', [Admin\DepartmentController::class, 'departmentDatatable'])->name('datatable.department');
 
     Route::get('/positions', [Admin\PositionController::class, 'showPosition'])->name('positions');

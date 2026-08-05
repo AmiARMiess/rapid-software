@@ -37,6 +37,7 @@
         const app = createApp({
             setup() {
                 const itemsPerPage = ref(8)
+
                 const headers = ref([{
                         title: 'Name',
                         key: 'name',
@@ -52,6 +53,10 @@
                 const serverItems = ref([])
                 const loading = ref(true)
                 const totalItems = ref(0)
+                const dialog = ref(false)
+                const deleting = ref(false)
+                const selectedDepartment = ref(null)
+                const selectedDepartmentName = ref('')
 
                 async function loadItems({
                     page,
@@ -77,12 +82,61 @@
                     loading.value = false
                 }
 
-                function editEmployee(item) {
-                    console.log('Edit employee:', item)
+                function viewDepartment(item) {
+                    console.log(item.id);
+                    window.location.href = "{{ route('admin.view.department', ['department_id' => '__ID__']) }}"
+                        .replace('__ID__', item.id);
                 }
 
-                function deleteEmployee(item) {
-                    console.log('Delete employee:', item)
+                function editDepartment(item) {
+                    window.location.href = "{{ route('admin.edit.department', ['department_id' => '__ID__']) }}"
+                        .replace('__ID__', item.id);
+                }
+
+                function deleteDepartment(item) {
+                    selectedDepartment.value = item.id;
+                    selectedDepartmentName.value = item.name || 'this department';
+                    dialog.value = true;
+                }
+
+                async function confirmDelete() {
+                    if (!selectedDepartment.value) {
+                        return;
+                    }
+
+                    deleting.value = true;
+
+                    try {
+                        const response = await fetch(
+                            `{{ route('admin.delete.position', ['department_id' => '__ID__']) }}`.replace(
+                                '__ID__', selectedDepartment.value), {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                },
+                            });
+
+                        if (!response.ok) {
+                            throw new Error('Unable to delete department');
+                        }
+
+                        dialog.value = false;
+                        selectedDepartment.value = null;
+                        selectedDepartmentName.value = '';
+
+                        await loadItems({
+                            page: 1,
+                            itemsPerPage: itemsPerPage.value,
+                            sortBy: [],
+                            search: search.value,
+                        });
+                    } catch (error) {
+                        console.error(error);
+                        alert('Unable to delete the department.');
+                    } finally {
+                        deleting.value = false;
+                    }
                 }
 
                 return {
@@ -93,8 +147,14 @@
                     loading,
                     totalItems,
                     loadItems,
-                    editEmployee,
-                    deleteEmployee,
+                    viewDepartment,
+                    editDepartment,
+                    deleteDepartment,
+                    confirmDelete,
+                    dialog,
+                    deleting,
+                    selectedDepartment,
+                    selectedDepartmentName,
                 }
             },
             template: `
@@ -125,7 +185,7 @@
                     <div class="d-flex gap-2">
                         <v-tooltip location="top" color="success" text="View">
                             <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" class="mr-1" color="success" title="View" size="small" @click="viewEmployee(item)">
+                                <v-btn v-bind="props" class="mr-1" color="success" title="View" size="small" @click="viewDepartment(item)">
                                     <i class="fa-regular fa-eye"></i>
                                 </v-btn>
                             </template>
@@ -133,7 +193,7 @@
 
                         <v-tooltip location="top" color="primary" text="Edit">
                             <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" class="mr-1" color="primary" title="Edit" size="small" @click="viewEmployee(item)">
+                                <v-btn v-bind="props" class="mr-1" color="primary" title="Edit" size="small" @click="editDepartment(item)">
                                     <i class="fa-regular fa-pen-to-square"></i>
                                 </v-btn>
                             </template>
@@ -141,7 +201,7 @@
 
                         <v-tooltip location="top" color="danger" text="Delete">
                             <template v-slot:activator="{ props }">
-                                <v-btn v-bind="props" class="mr-1" color="danger" title="View" size="small" @click="editEmployee(item)">
+                                <v-btn v-bind="props" class="mr-1" color="danger" title="View" size="small" @click="deleteDepartment(item)">
                                     <i class="fa-solid fa-trash text-white"></i>
                                 </v-btn>
                             </template>
@@ -150,6 +210,27 @@
                 </template>
                 
                 </v-data-table-server>
+
+                <div class="text-center pa-4">
+                    <v-dialog v-model="dialog" max-width="400">
+                        <v-card>
+                            <v-card-title>Delete department</v-card-title>
+                            <v-card-text>
+                                Are you sure you want to delete
+                                <strong>@{{ selectedDepartmentName }}</strong>?
+                            </v-card-text>
+                            <template #actions>
+                                <v-spacer></v-spacer>
+                                <v-btn text color="secondary" @click="dialog = false" :disabled="deleting">
+                                    Cancel
+                                </v-btn>
+                                <v-btn color="danger" @click="confirmDelete" :loading="deleting" :disabled="deleting">
+                                    Delete
+                                </v-btn>
+                            </template>
+                        </v-card>
+                    </v-dialog>
+                </div>
             `,
         })
 
