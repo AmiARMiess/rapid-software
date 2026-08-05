@@ -26,7 +26,7 @@
         <form id="position-form" method="POST"
             action="{{ route('admin.update.position', ['position_id' => $position->id]) }}">
             @csrf
-            <input type="hidden" id="nameInput" name="name" value="">
+
 
             <div class="row">
                 <div class="col-xl-4 col-md-6 mb-4">
@@ -36,7 +36,27 @@
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Position *</div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                        <div id="positionField"></div>
+                                        <input type="text" class="form-control" name="name" id="positionName"
+                                            v-model="positionName"
+                                            :class="{ 'is-invalid': v$.positionName.$dirty && v$.positionName.$invalid }"
+                                            @input="setPositionName"
+                                            placeholder="e.g. Senior Developer">
+                                        <div v-if="v$.positionName.$dirty && v$.positionName.$invalid"
+                                            class="invalid-feedback d-block">
+                                            <div v-if="v$.positionName.required.$invalid">Position is required</div>
+                                            <div v-if="v$.positionName.minLength.$invalid">Position must have at least 4 characters</div>
+                                        </div>
+
+                                        <v-snackbar
+                                            v-model="showSnackbar"
+                                            color="success"
+                                            location="bottom end"
+                                            timeout="3000"
+                                            title="Success"
+                                            prepend-icon="$success"
+                                        >
+                                            @{{ snackbarMessage }}
+                                        </v-snackbar>
                                     </div>
                                 </div>
                                 <div class="col-auto">
@@ -190,72 +210,61 @@
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.39/vue.global.prod.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@4.1.7/dist/vuetify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-demi"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vuelidate/core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vuelidate/validators"></script>
 
     <script>
         const { createApp, ref } = window.Vue;
         const { createVuetify } = window.Vuetify;
+        const { useVuelidate } = window.Vuelidate;
+        const { required, minLength } = window.VuelidateValidators;
 
         const positionApp = createApp({
             setup() {
-                const form = ref(null);
                 const positionName = ref(@json(old('name', $position->name)) || '');
-                const showSnackbar = ref(!!@json(session('success')));
+                const snackbarMessage = ref(@json(session('success')) || '');
+                const showSnackbar = ref(!!snackbarMessage.value);
 
-                const positionRules = [
-                    value => !!value || 'Position is required',
-                    value => (value && value.length >= 4) || 'Position must have at least 4 characters'
-                ];
-
-                const validateAndSubmit = async () => {
-                    if (!form.value) return false;
-                    const { valid } = await form.value.validate();
-                    if (valid) {
-                        // Sync Vue value to hidden form input
-                        document.getElementById('nameInput').value = positionName.value;
-                        document.getElementById('position-form').requestSubmit();
+                const v$ = useVuelidate({
+                    positionName: {
+                        required,
+                        minLength: minLength(4),
                     }
-                    return valid;
+                }, {
+                    positionName,
+                });
+
+                const setPositionName = ($event) => {
+                    positionName.value = $event.target.value.trim();
+                    v$.value.positionName.$touch();
                 };
 
-                // Expose to window so save button can access it
+                const validateAndSubmit = () => {
+                    v$.value.$touch();
+
+                    if (v$.value.$invalid) {
+                        return false;
+                    }
+
+                    document.getElementById('position-form').requestSubmit();
+                    return true;
+                };
+
                 window.positionController = { validateAndSubmit };
 
                 return {
-                    form,
                     positionName,
-                    positionRules,
-                    showSnackbar
+                    v$,
+                    setPositionName,
+                    showSnackbar,
+                    snackbarMessage
                 };
-            },
-            template: `
-                <div>
-                    <v-form ref="form" @submit.prevent>
-                        <v-text-field
-                            v-model="positionName"
-                            name="name"
-                            placeholder="e.g. Senior Developer"
-                            :rules="positionRules"
-                            outlined
-                            dense
-                        ></v-text-field>
-                    </v-form>
-                    
-                    <v-snackbar
-                        v-model="showSnackbar"
-                        color="success"
-                        location="bottom end"
-                        timeout="3000"
-                        title="Success"
-                        text="Your changes have been saved."
-                        prepend-icon="$success"
-                    >
-                    </v-snackbar>
-                </div>
-            `
+            }
         });
 
         const vuetify = createVuetify();
-        positionApp.use(vuetify).mount('#positionField');
+        positionApp.use(vuetify).mount('#position-edit-form');
 
         // Hook Save button to validation
         document.addEventListener('DOMContentLoaded', function() {

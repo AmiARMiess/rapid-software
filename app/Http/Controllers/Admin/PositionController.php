@@ -77,6 +77,8 @@ class PositionController extends Controller
 
     public function updatePosition(UpdatePositionRequest $request): RedirectResponse
     {
+        // dd($request);
+        
         $position = Position::where('id', (int) $request->position_id)
             ->where('user_id', auth()->user()->id)
             ->firstOrFail();
