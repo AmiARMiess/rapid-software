@@ -12,7 +12,7 @@ class UpdateDepartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return 1;
     }
 
     /**
@@ -23,7 +23,11 @@ class UpdateDepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'status' => ['nullable', 'integer', 'exists:option_statuses,id'],
+            'description' => ['nullable', 'string'],
+            'responsibilities' => ['nullable', 'array'],
+            'responsibilities.*' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

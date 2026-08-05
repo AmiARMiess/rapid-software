@@ -36,7 +36,7 @@
 
         const app = createApp({
             setup() {
-                const itemsPerPage = ref(8)
+
 
                 const headers = ref([{
                         title: 'Name',
@@ -49,6 +49,7 @@
                         align: 'center',
                     },
                 ])
+                const itemsPerPage = ref(8)
                 const search = ref('')
                 const serverItems = ref([])
                 const loading = ref(true)
@@ -57,6 +58,8 @@
                 const deleting = ref(false)
                 const selectedDepartment = ref(null)
                 const selectedDepartmentName = ref('')
+                const snackbarMessage = ref(@json(session('success')) || '');
+                const showSnackbar = ref(!!snackbarMessage.value);
 
                 async function loadItems({
                     page,
@@ -124,6 +127,8 @@
                         dialog.value = false;
                         selectedDepartment.value = null;
                         selectedDepartmentName.value = '';
+                        snackbarMessage.value = 'Department deleted successfully.';
+                        showSnackbar.value = true;
 
                         await loadItems({
                             page: 1,
@@ -155,6 +160,8 @@
                     deleting,
                     selectedDepartment,
                     selectedDepartmentName,
+                    showSnackbar,
+                    snackbarMessage
                 }
             },
             template: `
@@ -210,6 +217,11 @@
                 </template>
                 
                 </v-data-table-server>
+
+                <v-snackbar v-model="showSnackbar" color="success" location="bottom end" timeout="3000" title="Success"
+                    prepend-icon="$success">
+                    @{{ snackbarMessage }}
+                </v-snackbar>
 
                 <div class="text-center pa-4">
                     <v-dialog v-model="dialog" max-width="400">

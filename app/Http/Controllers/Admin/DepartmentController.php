@@ -84,11 +84,16 @@ class DepartmentController extends Controller
 
     public function showEditDepartment(Request $request): View
     {
-        return view('admin.department_edit');
+        $department = Department::where('user_id', auth()->user()->id)
+            ->where('id', (int) $request->department_id)
+            ->with('departmentResponsibles')
+            ->firstOrFail();
+
+        return view('admin.department_edit', compact('department'));
     }
 
     public function updateDepartment(UpdateDepartmentRequest $request): RedirectResponse
-    {        
+    {
         $department = Department::where('id', (int) $request->department_id)
             ->where('user_id', auth()->user()->id)
             ->firstOrFail();
