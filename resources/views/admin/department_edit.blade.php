@@ -33,18 +33,25 @@
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Department Name *</div>
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Department Name *
+                                    </div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">
                                         <input type="text" class="form-control" name="name" id="departmentName"
                                             v-model="departmentName"
                                             :class="{ 'is-invalid': v$.departmentName.$dirty && v$.departmentName.$invalid }"
-                                            @input="setDepartmentName"
-                                            placeholder="e.g. Engineering">
+                                            @input="setDepartmentName" placeholder="e.g. Engineering">
                                         <div v-if="v$.departmentName.$dirty && v$.departmentName.$invalid"
                                             class="invalid-feedback d-block">
-                                            <div v-if="v$.departmentName.required.$invalid">Department name is required</div>
-                                            <div v-if="v$.departmentName.minLength.$invalid">Department name must have at least 3 characters</div>
+                                            <div v-if="v$.departmentName.required.$invalid">Department name is required
+                                            </div>
+                                            <div v-if="v$.departmentName.minLength.$invalid">Department name must have at
+                                                least 3 characters</div>
                                         </div>
+
+                                        <v-snackbar v-model="showSnackbar" color="success" location="bottom end"
+                                            timeout="3000" title="Success" prepend-icon="$success">
+                                            @{{ snackbarMessage }}
+                                        </v-snackbar>
                                     </div>
                                 </div>
                                 <div class="col-auto">
@@ -98,24 +105,31 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-12 mb-3">
-                                <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Description</label>
-                                <textarea class="form-control" rows="4" name="description" placeholder="Describe the department purpose, objectives, and scope">{{ old('description', $department->description ?? '') }}</textarea>
+                                <label
+                                    class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Description</label>
+                                <textarea class="form-control" rows="4" name="description"
+                                    placeholder="Describe the department purpose, objectives, and scope">{{ old('description', $department->description ?? '') }}</textarea>
                             </div>
 
                             <div class="col-sm-12 mb-3">
-                                <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Department Responsibilities</label>
+                                <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Department
+                                    Responsibilities</label>
                                 <div id="responsibility-list" class="d-flex flex-column gap-2 mb-3">
                                     @forelse (collect(old('responsibilities', []))->filter(fn($responsibility) => filled($responsibility)) as $responsibility)
                                         <div class="input-group responsibility-item pb-2">
-                                            <input type="text" class="form-control" name="responsibilities[]" value="{{ $responsibility }}" placeholder="Add a department responsibility">
-                                            <button type="button" class="btn btn-outline-danger remove-responsibility" title="Remove">
+                                            <input type="text" class="form-control" name="responsibilities[]"
+                                                value="{{ $responsibility }}" placeholder="Add a department responsibility">
+                                            <button type="button" class="btn btn-outline-danger remove-responsibility"
+                                                title="Remove">
                                                 <i class="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>
                                     @empty
                                         <div class="input-group responsibility-item pb-2">
-                                            <input type="text" class="form-control" name="responsibilities[]" placeholder="Add a department responsibility">
-                                            <button type="button" class="btn btn-outline-danger remove-responsibility" title="Remove">
+                                            <input type="text" class="form-control" name="responsibilities[]"
+                                                placeholder="Add a department responsibility">
+                                            <button type="button" class="btn btn-outline-danger remove-responsibility"
+                                                title="Remove">
                                                 <i class="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>
@@ -142,14 +156,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@vuelidate/validators"></script>
 
     <script>
-        const { createApp, ref } = window.Vue;
-        const { createVuetify } = window.Vuetify;
-        const { useVuelidate } = window.Vuelidate;
-        const { required, minLength } = window.VuelidateValidators;
+        const {
+            createApp,
+            ref
+        } = window.Vue;
+        const {
+            createVuetify
+        } = window.Vuetify;
+        const {
+            useVuelidate
+        } = window.Vuelidate;
+        const {
+            required,
+            minLength
+        } = window.VuelidateValidators;
 
         const departmentApp = createApp({
             setup() {
                 const departmentName = ref(@json(old('name', $department->name)) || '');
+                const snackbarMessage = ref(@json(session('success')) || '');
+                const showSnackbar = ref(!!snackbarMessage.value);
 
                 const v$ = useVuelidate({
                     departmentName: {
@@ -176,12 +202,16 @@
                     return true;
                 };
 
-                window.departmentController = { validateAndSubmit };
+                window.departmentController = {
+                    validateAndSubmit
+                };
 
                 return {
                     departmentName,
                     v$,
                     setDepartmentName,
+                    showSnackbar,
+                    snackbarMessage
                 };
             }
         });
