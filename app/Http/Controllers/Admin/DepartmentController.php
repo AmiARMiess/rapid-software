@@ -10,6 +10,7 @@ use App\Http\Requests\CreateDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use Spatie\LaravelPdf\Facades\Pdf;
 use App\Models\OptionStatus;
 use App\Models\Position;
 use App\Models\Employee;
@@ -161,5 +162,47 @@ class DepartmentController extends Controller
         $department->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    public function printDepartment(Request $request)
+    {
+        $department = Department::where('user_id', auth()->user()->id)
+            ->where('id', (int) $request->department_id)
+            ->with('departmentResponsibles')
+            ->withCount(['employees as employees_count' => function ($query) {
+                $query->where('employees.user_id', auth()->id());
+            }])
+            ->firstOrFail();
+
+        $countTotalPosition = Position::where('department', (int) $request->department_id)
+            ->where('user_id', auth()->user()->id)
+            ->count();
+
+        $countTotalEmployee = $department->employees_count;
+
+        $pdfFileName = "departments/department-{$department->id}.pdf";
+
+        // Render the Blade view to HTML first so we can verify variables are present
+        $html = view('admin.pdf.department_info', compact('department', 'countTotalPosition', 'countTotalEmployee'))->render();
+
+        // Save debug HTML (optional) to the private storage so you can inspect the rendered HTML
+        try {
+            \Illuminate\Support\Facades\Storage::disk('local')->put("departments/department-{$department->id}.html", $html);
+        } catch (\Throwable $e) {
+            // ignore write failures for debug file
+        }
+
+        // Generate the PDF from rendered HTML to avoid any view rendering issues inside the PDF driver
+        Pdf::html($html)
+            ->name("department-{$department->id}.pdf")
+            ->disk('local', 'private')
+            ->save($pdfFileName);
+
+        $pdfPath = storage_path('app/private/'.$pdfFileName);
+
+        return response()->file($pdfPath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="department-{$department->id}.pdf"',
+        ]);
     }
 }
