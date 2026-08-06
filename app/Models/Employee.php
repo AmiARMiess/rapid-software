@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Position;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +12,11 @@ class Employee extends Model
         'full_name',
         'gender',
     ];
+
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class, 'position', 'id');
+    }
 
     /**
      * Get the gender associated with the employee.

@@ -10,7 +10,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Departments</h1>
 
-        <a href="{{ route('admin.create.department') }}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">
+        <a href="{{ route('admin.show_create.department') }}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">
             <i class="fa-solid fa-plus"></i> Add Department</a>
     </div>
 
@@ -111,7 +111,7 @@
 
                     try {
                         const response = await fetch(
-                            `{{ route('admin.delete.position', ['department_id' => '__ID__']) }}`.replace(
+                            `{{ route('admin.delete.department', ['department_id' => '__ID__']) }}`.replace(
                                 '__ID__', selectedDepartment.value), {
                                 method: 'DELETE',
                                 headers: {

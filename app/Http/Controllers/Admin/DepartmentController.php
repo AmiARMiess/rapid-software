@@ -10,6 +10,9 @@ use App\Http\Requests\CreateDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use App\Models\OptionStatus;
+use App\Models\Position;
+use App\Models\Employee;
 
 class DepartmentController extends Controller
 {
@@ -59,7 +62,9 @@ class DepartmentController extends Controller
 
     public function showCreateDepartment(): View
     {
-        return view('admin.department_create');
+        $optionStatuses = OptionStatus::all();
+
+        return view('admin.department_create', compact('optionStatuses'));
     }
 
     public function createDepartment(CreateDepartmentRequest $request)
@@ -70,12 +75,12 @@ class DepartmentController extends Controller
         $department = Department::create($data);
 
         $responsibilities = collect($request->input('responsibilities', []))
-            ->filter(fn ($responsibility) => filled($responsibility))
-            ->map(fn ($responsibility) => ['name' => trim($responsibility)])
+            ->filter(fn($responsibility) => filled($responsibility))
+            ->map(fn($responsibility) => ['name' => trim($responsibility)])
             ->all();
 
         if (! empty($responsibilities)) {
-            $department->positionResponsibles()->createMany($responsibilities);
+            $department->departmentResponsibles()->createMany($responsibilities);
         }
 
         return redirect()->route('admin.edit.department', ['department_id' => $department->id])
@@ -87,9 +92,20 @@ class DepartmentController extends Controller
         $department = Department::where('user_id', auth()->user()->id)
             ->where('id', (int) $request->department_id)
             ->with('departmentResponsibles')
+            ->withCount(['employees as employees_count' => function ($query) {
+                $query->where('employees.user_id', auth()->id());
+            }])
             ->firstOrFail();
 
-        return view('admin.department_edit', compact('department'));
+        $countTotalPosition = Position::where('department', (int) $request->department_id)
+            ->where('user_id', auth()->user()->id)
+            ->count();
+
+        $countTotalEmployee = $department->employees_count;
+
+        $optionStatuses = OptionStatus::all();
+
+        return view('admin.department_edit', compact('department', 'optionStatuses', 'countTotalPosition', 'countTotalEmployee'));
     }
 
     public function updateDepartment(UpdateDepartmentRequest $request): RedirectResponse
@@ -117,11 +133,23 @@ class DepartmentController extends Controller
             ->with('success', 'Department updated successfully.');
     }
 
-        public function showViewDepartment(Request $request): View
+    public function showViewDepartment(Request $request): View
     {
-        $department = Department::where('user_id', auth()->user()->id)->where('id', (int) $request->department_id)->firstOrFail();
+        $department = Department::where('user_id', auth()->user()->id)
+            ->where('id', (int) $request->department_id)
+            ->with('departmentResponsibles')
+            ->withCount(['employees as employees_count' => function ($query) {
+                $query->where('employees.user_id', auth()->id());
+            }])
+            ->firstOrFail();
 
-        return view('admin.department_view', compact('department'));
+        $countTotalPosition = Position::where('department', (int) $request->department_id)
+            ->where('user_id', auth()->user()->id)
+            ->count();
+
+        $countTotalEmployee = $department->employees_count;
+
+        return view('admin.department_view', compact('department', 'countTotalPosition', 'countTotalEmployee'));
     }
 
     public function deleteDepartment(Request $request): JsonResponse

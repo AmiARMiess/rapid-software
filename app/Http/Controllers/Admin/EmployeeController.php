@@ -142,9 +142,12 @@ class EmployeeController extends Controller
 
     public function showPayslip()
     {
+        // return pdf('admin.pdf.payslip')
+        //     ->download('invoice-2023-04-10.pdf');
 
-        Pdf::view('admin.pdf.payslip')
-            ->format('a4')
-            ->save('invoice.pdf');
+        // Pdf::view('admin.pdf.payslip')
+        //     // ->format('a4')
+        //     ->name('invoice.pdf')
+        //     ->download();
     }
 }

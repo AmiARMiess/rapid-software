@@ -47,44 +47,6 @@
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-success shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Employees</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fa-solid fa-users fa-2x text-success"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-info shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Status</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                        <select name="status" class="form-control">
-                                            @foreach ($optionStatuses as $optionStatus)
-                                                <option value="{{ $optionStatus->id }}">{{ $optionStatus->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fa-solid fa-circle-check fa-2x text-info"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-xl-2 col-md-6 mb-4">
                     <div class="card border-left-warning shadow h-100 py-2">
                         <div class="card-body">
@@ -101,6 +63,28 @@
                                 </div>
                                 <div class="col-auto">
                                     <i class="fa-solid fa-ranking-star fa-2x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Status</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <select name="status" class="form-control">
+                                            @foreach ($optionStatuses as $optionStatus)
+                                                <option value="{{ $optionStatus->id }}">{{ $optionStatus->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa-solid fa-circle-check fa-2x text-info"></i>
                                 </div>
                             </div>
                         </div>
