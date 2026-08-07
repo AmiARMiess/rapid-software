@@ -29,7 +29,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/departments/create', [Admin\DepartmentController::class, 'showCreateDepartment'])->name('show_create.department');
     Route::post('/departments/create-department', [Admin\DepartmentController::class, 'createDepartment'])->name('create.department');
     Route::get('/departments/view/{department_id}', [Admin\DepartmentController::class, 'showViewDepartment'])->name('view.department');
-    Route::get('/departments/print/{department_id}', [Admin\DepartmentController::class, 'printDepartment'])->name('print.department');
+    Route::get('/departments/print/{department_id}', [Admin\DepartmentController::class, 'printDepartment'])->name('report.department');
     Route::get('/departments/edit/{department_id}', [Admin\DepartmentController::class, 'showEditDepartment'])->name('edit.department');
     Route::post('/departments/edit/', [Admin\DepartmentController::class, 'updateDepartment'])->name('update.department');
     Route::delete('/departments/delete/{department_id}', [Admin\DepartmentController::class, 'deleteDepartment'])->name('delete.department');
@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/positions/create', [Admin\PositionController::class, 'showCreatePosition'])->name('show_create.position');
     Route::post('/positions/create-position', [Admin\PositionController::class, 'createPosition'])->name('create.position');
     Route::get('/positions/view/{position_id}', [Admin\PositionController::class, 'showViewPosition'])->name('view.position');
+    Route::get('/positions/print/{position_id}', [Admin\PositionController::class, 'printPosition'])->name('report.position');
     Route::get('/positions/edit/{position_id}', [Admin\PositionController::class, 'showEditPosition'])->name('edit.position');
     Route::post('/positions/edit', [Admin\PositionController::class, 'updatePosition'])->name('update.position');
     Route::delete('/positions/delete/{position_id}', [Admin\PositionController::class, 'deletePosition'])->name('delete.position');
@@ -66,4 +67,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

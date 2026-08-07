@@ -17,8 +17,8 @@
             <a class="btn btn-primary btn-sm shadow-sm mr-2" href="{{ route('admin.edit.department', request('department_id')) }}" type="button">
                 <i class="fa-regular fa-pen-to-square"></i> Edit Department
             </a>
-            <a class="btn btn-info btn-sm shadow-sm" href="{{ route('admin.print.department', request('department_id')) }}" type="button">
-                <i class="fa-regular fa-file-pdf"></i> View
+            <a class="btn btn-info btn-sm shadow-sm" href="{{ route('admin.report.department', request('department_id')) }}" type="button">
+                <i class="fa-regular fa-file-pdf"></i> Report
             </a>
         </div>
     </div>

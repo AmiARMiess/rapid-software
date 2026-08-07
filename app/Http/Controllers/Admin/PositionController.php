@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use App\Http\Requests\UpdatePositionRequest;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class PositionController extends Controller
 {
@@ -159,5 +160,26 @@ class PositionController extends Controller
         $position->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    public function printPosition(Request $request)
+    {
+        $position = Position::where('user_id', auth()->user()->id)
+            ->where('id', (int) $request->position_id)
+            ->with('positionResponsibles')
+            ->withCount(['employees as employees_count' => function ($query) {
+                $query->where('employees.user_id', auth()->id());
+            }])
+            ->firstOrFail();
+
+        // $countTotalPosition = Position::where('department', (int) $request->department_id)
+        //     ->where('user_id', auth()->user()->id)
+        //     ->count();
+
+        $countTotalEmployee = $position->employees_count;
+
+        return Pdf::view('admin.pdf.position_info', compact('position', 'countTotalEmployee'))
+            ->format('a4')
+            ->download("position-{$position->id}.pdf");
     }
 }

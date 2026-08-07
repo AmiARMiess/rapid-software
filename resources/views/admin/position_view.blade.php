@@ -11,8 +11,13 @@
             <a href="{{ route('admin.positions') }}" class="btn btn-light btn-sm shadow-sm mr-2">
                 <i class="fa-solid fa-arrow-left"></i> Back
             </a>
-            <a class="btn btn-primary btn-sm shadow-sm" href="{{ route('admin.edit.position', request('position_id')) }}" type="button">
+            <a class="btn btn-primary btn-sm shadow-sm mr-2" href="{{ route('admin.edit.position', request('position_id')) }}"
+                type="button">
                 <i class="fa-regular fa-pen-to-square"></i> Edit Position
+            </a>
+            <a class="btn btn-info btn-sm shadow-sm" href="{{ route('admin.report.position', request('position_id')) }}"
+                type="button">
+                <i class="fa-regular fa-file-pdf"></i> Report
             </a>
         </div>
     </div>
@@ -94,7 +99,8 @@
                     <div class="row">
                         <div class="col-sm-6 mb-3">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Department</label>
-                            <div class="form-control-plaintext h6 text-gray-900">{{ $position->positionDepartment?->name }}</div>
+                            <div class="form-control-plaintext h6 text-gray-900">{{ $position->positionDepartment?->name }}
+                            </div>
                         </div>
                         <div class="col-sm-6 mb-3">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Reporting To</label>
@@ -102,7 +108,8 @@
                         </div>
                         <div class="col-sm-6 mb-3">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Created On</label>
-                            <div class="form-control-plaintext h6 text-gray-900">{{ $position->created_at->format('d M Y') }}</div>
+                            <div class="form-control-plaintext h6 text-gray-900">
+                                {{ $position->created_at->format('d M Y') }}</div>
                         </div>
                         <div class="col-sm-12">
                             <label class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Description</label>

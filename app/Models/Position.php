@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Position extends Model
 {
@@ -44,5 +43,10 @@ class Position extends Model
     {
         return $this->belongsTo(Position::class, 'reporting_to', 'id')
         ->where('user_id', auth()->user()->id);
+    }
+
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class, 'position', 'id');
     }
 }
