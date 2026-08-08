@@ -74,15 +74,43 @@ CREATE TABLE IF NOT EXISTS `departments` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` bigint unsigned DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rapid-software.departments: ~2 rows (approximately)
-INSERT INTO `departments` (`id`, `user_id`, `name`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Departments', NULL, NULL),
-	(2, 1, 'Xepartments', NULL, NULL);
+-- Dumping data for table rapid-software.departments: ~4 rows (approximately)
+INSERT INTO `departments` (`id`, `user_id`, `name`, `status`, `description`, `created_at`, `updated_at`) VALUES
+	(2, 1, 'Department', 2, 'dsfdsddzz', '2026-08-06 03:56:53', '2026-08-05 20:02:12'),
+	(4, 1, 'Technology', NULL, 'fdgdfgdf', '2026-08-05 03:58:03', '2026-08-05 17:40:12'),
+	(10, 1, 'Timbalan Perdana Menteri', 1, 'fdsfdsc', '2026-08-05 19:47:57', '2026-08-05 19:48:04'),
+	(11, 1, 'www', 2, 'gfdgfdgf', '2026-08-05 20:35:28', '2026-08-05 20:35:28');
+
+-- Dumping structure for table rapid-software.department_responsibles
+CREATE TABLE IF NOT EXISTS `department_responsibles` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `department_id` bigint unsigned NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table rapid-software.department_responsibles: ~12 rows (approximately)
+INSERT INTO `department_responsibles` (`id`, `department_id`, `name`) VALUES
+	(35, 7, 'csdczzz'),
+	(36, 7, 'fdcxxxx'),
+	(40, 4, 'fgfdggdf'),
+	(41, 4, 'fgdfgd'),
+	(43, 9, 'fgfdg'),
+	(44, 9, 'fdgfdgcc'),
+	(48, 10, 'dfdsfsdfds'),
+	(49, 10, 'csdczzz'),
+	(50, 10, 'Coach junior engineers and support onboarding'),
+	(55, 2, 'gdfdgfdfg'),
+	(56, 2, 'gfdgdfcvc'),
+	(62, 11, 'gfdgfdcc'),
+	(63, 11, 'bnhgnhgghn');
 
 -- Dumping structure for table rapid-software.employees
 CREATE TABLE IF NOT EXISTS `employees` (
@@ -99,12 +127,12 @@ CREATE TABLE IF NOT EXISTS `employees` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rapid-software.employees: ~3 rows (approximately)
+-- Dumping data for table rapid-software.employees: ~4 rows (approximately)
 INSERT INTO `employees` (`id`, `user_id`, `full_name`, `ic_number`, `passport_number`, `employee_number`, `position`, `gender`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Amirul', '999999', NULL, '2112', 1, 1, '2026-08-02 06:05:25', '2026-08-02 06:05:26'),
-	(2, 1, 'Ali', NULL, NULL, '4233', 1, 1, '2026-08-02 06:05:25', '2026-08-02 06:05:26'),
-	(3, 2, 'Siti', '777777', NULL, '6546', 2, 2, '2026-08-02 06:05:25', '2026-08-02 06:05:26'),
-	(4, 1, 'Amir', NULL, '4564353', '2456', 1, 1, '2026-08-02 06:05:25', '2026-08-02 06:05:26');
+	(1, 1, 'Amirul', '999999', NULL, '2112', 17, 1, '2026-08-02 06:05:25', '2026-08-02 06:05:26'),
+	(2, 2, 'Ali', NULL, NULL, '4233', 17, 1, '2026-08-02 06:05:25', '2026-08-02 06:05:26'),
+	(3, 1, 'Siti', '777777', NULL, '6546', 17, 2, '2026-08-02 06:05:25', '2026-08-02 06:05:26'),
+	(4, 2, 'Amir', NULL, '4564353', '2456', 17, 1, '2026-08-02 06:05:25', '2026-08-02 06:05:26');
 
 -- Dumping structure for table rapid-software.failed_jobs
 CREATE TABLE IF NOT EXISTS `failed_jobs` (
@@ -215,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `option_levels` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rapid-software.option_levels: ~0 rows (approximately)
+-- Dumping data for table rapid-software.option_levels: ~4 rows (approximately)
 INSERT INTO `option_levels` (`id`, `name`) VALUES
 	(1, 'L1'),
 	(2, 'L2'),
@@ -247,7 +275,7 @@ CREATE TABLE IF NOT EXISTS `option_statuses` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rapid-software.option_statuses: ~2 rows (approximately)
+-- Dumping data for table rapid-software.option_statuses: ~3 rows (approximately)
 INSERT INTO `option_statuses` (`id`, `name`) VALUES
 	(1, 'Active'),
 	(2, 'Inactive'),
@@ -268,31 +296,48 @@ CREATE TABLE IF NOT EXISTS `positions` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint unsigned NOT NULL DEFAULT '0',
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` bigint unsigned NOT NULL DEFAULT (0),
-  `level` bigint unsigned NOT NULL DEFAULT '0',
-  `department` bigint unsigned NOT NULL DEFAULT '0',
-  `reporting_to` bigint unsigned NOT NULL DEFAULT '0',
+  `status` bigint unsigned DEFAULT '0',
+  `level` bigint unsigned DEFAULT '0',
+  `department` bigint unsigned DEFAULT '0',
+  `reporting_to` bigint unsigned DEFAULT '0',
   `description` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rapid-software.positions: ~3 rows (approximately)
+-- Dumping data for table rapid-software.positions: ~5 rows (approximately)
 INSERT INTO `positions` (`id`, `user_id`, `name`, `status`, `level`, `department`, `reporting_to`, `description`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Senior Developer', 1, 1, 2, 1, 'lorem ipsum dolor sit amet', NULL, NULL),
-	(2, 2, 'Aosition', 0, 0, 0, 0, NULL, NULL, NULL),
-	(3, 1, 'Xosition', 0, 0, 0, 1, NULL, NULL, NULL);
+	(2, 2, 'Manager', 2, 3, 1, NULL, NULL, NULL, '2026-08-03 18:02:04'),
+	(14, 1, 'Prime Minister', 1, 2, 4, 13, 'helllooo worldd!....', '2026-08-03 20:52:27', '2026-08-03 20:54:10'),
+	(15, 1, 'Senior Developer', 2, 4, 11, 14, 'Leads software delivery, coordinates technical planning, and ensures best practices are followed across the engineering team.', '2026-08-03 21:21:57', '2026-08-05 03:24:04'),
+	(17, 1, 'DevOps', 2, 3, 2, 13, 'fdsfsdf', '2026-08-04 19:04:55', '2026-08-04 19:04:55'),
+	(18, 1, 'Timbalan Perdana Menteri', 2, 2, 10, 15, 'lorem', '2026-08-05 03:25:31', '2026-08-05 03:25:31');
 
 -- Dumping structure for table rapid-software.position_responsibles
 CREATE TABLE IF NOT EXISTS `position_responsibles` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `position_id` bigint unsigned NOT NULL DEFAULT '0',
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table rapid-software.position_responsibles: ~0 rows (approximately)
+-- Dumping data for table rapid-software.position_responsibles: ~13 rows (approximately)
+INSERT INTO `position_responsibles` (`id`, `position_id`, `name`) VALUES
+	(20, 14, 'fggfdgdfgdf...'),
+	(33, 1, 'bnhgnhgghn'),
+	(34, 1, 'dsadsad'),
+	(35, 1, 'lorem dolor sit amet...'),
+	(66, 17, 'dsfsdfsd'),
+	(67, 17, 'dsfsdf'),
+	(76, 15, 'Guide technical roadmap and sprint execution'),
+	(77, 15, 'Review architecture decisions and code quality'),
+	(78, 15, 'Coach junior engineers and support onboarding'),
+	(79, 15, 'Ensure delivery timelines and standards are met'),
+	(81, 13, 'gfdxxxx'),
+	(82, 18, 'fdgdg'),
+	(83, 18, 'gfdcc'),
+	(84, 18, 'fgdfvv');
 
 -- Dumping structure for table rapid-software.sessions
 CREATE TABLE IF NOT EXISTS `sessions` (
@@ -309,7 +354,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 
 -- Dumping data for table rapid-software.sessions: ~1 rows (approximately)
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-	('3vduhltWzzcqAx95EuMqz15vnIs3gZCbRQMdtsBA', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:153.0) Gecko/20100101 Firefox/153.0', 'eyJfdG9rZW4iOiJtamZndzhralFGdUV5SG1zZG9iWXpHcHkySjBzZVl0UklQU29vZ1QxIiwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHBzOlwvXC9yYXBpZC1zb2Z0d2FyZS50ZXN0XC9hZG1pblwvcG9zaXRpb25zXC9lZGl0XC8xIiwicm91dGUiOiJhZG1pbi5lZGl0LnBvc2l0aW9uIn0sIl9mbGFzaCI6eyJvbGQiOltdLCJuZXciOltdfSwibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiOjF9', 1785739819);
+	('NsS82Bu1nRlBgyFwf8E2wuZ3CUyNvs7ujYzMVKmM', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:153.0) Gecko/20100101 Firefox/153.0', 'eyJfdG9rZW4iOiJMQlFYTldSTGtRU1dxVUs5WlRja3hXWml6NEtGUkpCUDB5ZFc3NjI2IiwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHBzOlwvXC9yYXBpZC1zb2Z0d2FyZS50ZXN0XC9hZG1pblwvZGVwYXJ0bWVudHNcL2RhdGF0YWJsZT9pdGVtc1BlclBhZ2U9OCZwYWdlPTEmc2VhcmNoPSZzb3J0Qnk9JTVCJTVEIiwicm91dGUiOiJhZG1pbi5kYXRhdGFibGUuZGVwYXJ0bWVudCJ9LCJfZmxhc2giOnsib2xkIjpbXSwibmV3IjpbXX0sImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjoxfQ==', 1786091630);
 
 -- Dumping structure for table rapid-software.users
 CREATE TABLE IF NOT EXISTS `users` (
